@@ -9,6 +9,12 @@ from projects.models import Skill
 from .forms import RegistrationForm, EditProfileForm, LoginForm, ChangePasswordForm
 
 
+class UserDetailView(View):
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        return render(request, 'users/user-details.html', {'user': user})
+
+
 def logout_view(request):
     logout(request)
     return redirect('/projects/list/')

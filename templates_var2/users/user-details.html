@@ -42,15 +42,15 @@
         <div class="profile-actions">
             <a href="#"
                class="black-button black-button-share share-button"
-               data-url="/users/{{ user.id }}">
+               data-url="/users/{{ user.id }}/">
                 {% include 'includes/svg/share.html' %}
             </a>
             {% if request.user.id == user.id %}
-            <a href="/users/edit-profile" class="black-button">
+            <a href="{% url 'users:edit-profile' %}" class="black-button">
                 {% include 'includes/svg/pen.html' %}
                 Редактировать
             </a>
-            <a href="/projects/create-project" class="black-button">
+            <a href="{% url 'projects:create-project' %}" class="black-button">
                 {% include 'includes/svg/plus.html' %}
                 Добавить проект
             </a>
