@@ -1,5 +1,4 @@
-
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, View
 from django.http import JsonResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
@@ -83,3 +82,17 @@ class ToggleParticipateView(View):
             project.participants.add(user)
             participated = True
         return JsonResponse({"status": "ok", "participated": participated})
+
+
+@method_decorator(login_required, name='dispatch')
+class ToggleFavoriteView(View):
+    def post(self, request, pk):
+        project = get_object_or_404(Project, pk=pk)
+        user = request.user
+        if user in project.favorites.all():
+            project.favorites.remove(user)
+            is_favorite = False
+        else:
+            project.favorites.add(user)
+            is_favorite = True
+        return JsonResponse({"status": "ok", "is_favorite": is_favorite})

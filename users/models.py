@@ -22,7 +22,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=124)
     surname = models.CharField(max_length=124)
-    avatar = models.ImageField(upload_to='avatars/')
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
     phone = models.CharField(max_length=12)
     github_url = models.URLField(blank=True, null=True)
     about = models.TextField(max_length=256, blank=True, null=True)
@@ -31,7 +31,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name', 'surname', 'phone', 'avatar']
+    REQUIRED_FIELDS = ['name', 'surname', 'phone']
 
     objects = UserManager()
 

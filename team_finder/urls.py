@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
 		path('admin/', admin.site.urls),
-		path('projects/', include('projects.urls')),
+		path('projects/', include(('projects.urls', 'projects'), namespace='projects')),
 		path('users/', include(('users.urls', 'users'), namespace='users')),
 		path('', lambda request: redirect('project-list', permanent=False)),
 ]

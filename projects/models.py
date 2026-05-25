@@ -20,6 +20,7 @@ class Project(models.Model):
     status = models.CharField(max_length=6, choices=STATUS_CHOICES, default="open")
     participants = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="participated_projects", blank=True)
     skills = models.ManyToManyField(Skill, related_name="projects", blank=True)
+    favorites = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="favorite_projects", blank=True)
 
     def __str__(self):
         return self.name

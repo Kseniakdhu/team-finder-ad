@@ -9,6 +9,12 @@ from projects.models import Skill
 from .forms import RegistrationForm, EditProfileForm, LoginForm, ChangePasswordForm
 
 
+class UserDetailView(View):
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        return render(request, 'users/user-details.html', {'user': user})
+
+
 def logout_view(request):
     logout(request)
     return redirect('/projects/list/')
@@ -25,10 +31,10 @@ class ChangePasswordView(View):
             new_password = form.cleaned_data['new_password1']
             request.user.set_password(new_password)
             request.user.save()
-            update_session_auth_hash(request, request.user) 
+            update_session_auth_hash(request, request.user)
             return redirect('user-details', user_id=request.user.id)
         return render(request, 'users/change_password.html', {'form': form})
-    
+
 
 class LoginView(View):
     def get(self, request):
@@ -47,7 +53,7 @@ class LoginView(View):
             else:
                 form.add_error(None, 'Неверный email или пароль')
         return render(request, 'users/login.html', {'form': form})
-    
+
 class RegisterView(View):
     def get(self, request):
         form = RegistrationForm()
@@ -121,19 +127,31 @@ class RemoveSkillView(View):
 
 class ParticipantsListView(View):
     def get(self, request):
+        from django.core.paginator import Paginator
         skill_name = request.GET.get('skill')
         all_skills = Skill.objects.all()
         active_skill = None
         if skill_name:
             active_skill = Skill.objects.filter(name=skill_name).first()
             if active_skill:
-                participants = User.objects.filter(skills=active_skill).order_by('id')
+                users_qs = User.objects.filter(skills=active_skill).order_by('-date_joined')
             else:
-                participants = User.objects.none()
+                users_qs = User.objects.none()
         else:
-            participants = User.objects.all().order_by('id')
+            users_qs = User.objects.all().order_by('-date_joined')
+
+        paginator = Paginator(users_qs, 12)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        # Для корректной работы пагинации с фильтрами
+        query_prefix = ''
+        if skill_name:
+            query_prefix = f'skill={skill_name}&'
+
         return render(request, 'users/participants.html', {
-            'participants': participants,
+            'page_obj': page_obj,
             'all_skills': all_skills,
             'active_skill': active_skill,
+            'query_prefix': query_prefix,
         })

@@ -29,6 +29,7 @@ class RegistrationForm(forms.ModelForm):
     name = forms.CharField(label='Имя')
     surname = forms.CharField(label='Фамилия')
     email = forms.EmailField(label='Email')
+    phone = forms.CharField(label='Номер телефона')
     password = forms.CharField(widget=forms.PasswordInput, label='Пароль')
 
     class Meta:

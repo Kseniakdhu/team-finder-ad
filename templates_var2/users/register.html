@@ -10,13 +10,15 @@
 {% block content %}
 <div class="auth-card">
     <h2>Регистрация</h2>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="name-fields">
             <div>{{ form.name.label_tag }} {{ form.name }}</div>
             <div>{{ form.surname.label_tag }} {{ form.surname }}</div>
         </div>
         {{ form.email.label_tag }} {{ form.email }}
+        {{ form.phone.label_tag }} {{ form.phone }}
+        {{ form.avatar.label_tag }} {{ form.avatar }}
         {{ form.password.label_tag }} {{ form.password }}
         {% for error in form.errors.values %}
         <p style="color: red;">{{error}}</p>

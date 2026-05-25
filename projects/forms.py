@@ -2,6 +2,11 @@ from django import forms
 from .models import Project
 
 class ProjectForm(forms.ModelForm):
+    name = forms.CharField(label='Название проекта')
+    description = forms.CharField(label='Описание проекта', widget=forms.Textarea, required=False)
+    github_url = forms.URLField(label='Ссылка на GitHub', required=False)
+    status = forms.ChoiceField(label='Статус', choices=[('open', 'Открыт'), ('closed', 'Закрыт')])
+
     class Meta:
         model = Project
         fields = ['name', 'description', 'github_url', 'status']
