@@ -5,6 +5,42 @@ from django.http import JsonResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .models import Project
+from .forms import ProjectForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse
+
+class ProjectCreateView(LoginRequiredMixin, View):
+    def get(self, request):
+        form = ProjectForm()
+        return render(request, 'projects/create-project.html', {'form': form, 'is_edit': False})
+
+    def post(self, request):
+        form = ProjectForm(request.POST)
+        if form.is_valid():
+            project = form.save(commit=False)
+            project.owner = request.user
+            project.save()
+            project.participants.add(request.user)
+            return redirect(reverse('project-detail', args=[project.id]))
+        return render(request, 'projects/create-project.html', {'form': form, 'is_edit': False})
+
+class ProjectEditView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        project = get_object_or_404(Project, pk=pk)
+        if project.owner != request.user:
+            return HttpResponseForbidden()
+        form = ProjectForm(instance=project)
+        return render(request, 'projects/create-project.html', {'form': form, 'is_edit': True})
+
+    def post(self, request, pk):
+        project = get_object_or_404(Project, pk=pk)
+        if project.owner != request.user:
+            return HttpResponseForbidden()
+        form = ProjectForm(request.POST, instance=project)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('project-detail', args=[project.id]))
+        return render(request, 'projects/create-project.html', {'form': form, 'is_edit': True})
 
 class ProjectListView(ListView):
     model = Project

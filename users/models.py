@@ -18,7 +18,7 @@ class UserManager(BaseUserManager):
         return self.create_user(email, name, surname, phone, avatar, password, **extra_fields)
 
 class User(AbstractBaseUser, PermissionsMixin):
-        skills = models.ManyToManyField('projects.Skill', related_name='users', blank=True)
+    skills = models.ManyToManyField('projects.Skill', related_name='users', blank=True)
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=124)
     surname = models.CharField(max_length=124)
