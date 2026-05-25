@@ -137,3 +137,9 @@ class ParticipantsListView(View):
             'all_skills': all_skills,
             'active_skill': active_skill,
         })
+
+
+class UserDetailView(View):
+    def get(self, request, user_id):
+        user = get_object_or_404(User, id=user_id)
+        return render(request, 'users/user-details.html', {'user': user})

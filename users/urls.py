@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ParticipantsListView, skills_autocomplete, AddSkillView, RemoveSkillView, RegisterView, EditProfileView, LoginView, ChangePasswordView, logout_view
+from .views import ParticipantsListView, skills_autocomplete, AddSkillView, RemoveSkillView, RegisterView, EditProfileView, LoginView, ChangePasswordView, logout_view, UserDetailView
 
 urlpatterns = [
     path('list/', ParticipantsListView.as_view(), name='participants-list'),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('change_password/', ChangePasswordView.as_view(), name='change-password'),
     path('logout/', logout_view, name='logout'),
+    path('<int:user_id>/', UserDetailView.as_view(), name='user-details'),
 ]

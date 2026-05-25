@@ -55,6 +55,19 @@
                data-url="/projects/{{ project.id }}">
                 {% include 'includes/svg/share.html' %}
             </a>
+            {% if user.is_authenticated %}
+                <button id="favorite-btn" class="black-button"
+                        data-project="{{ project.id }}"
+                >
+                    {% if request.user in project.favorites.all %}
+                        {% include 'includes/svg/star_filled.html' %}
+                        В избранном
+                    {% else %}
+                        {% include 'includes/svg/star.html' %}
+                        В избранное
+                    {% endif %}
+                </button>
+            {% endif %}
             {% if user.id == project.owner.id %}
                 <a href="/projects/{{ project.id }}/edit" class="black-button">
                     {% include 'includes/svg/pen.html' %}
