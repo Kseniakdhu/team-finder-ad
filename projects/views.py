@@ -62,6 +62,7 @@ class ProjectListView(ListView):
     template_name = 'projects/project_list.html'
     context_object_name = 'projects'
     ordering = ['-created_at']
+    paginate_by = 12
 
     def get_queryset(self):
         return Project.objects.all().order_by('-created_at')
