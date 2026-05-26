@@ -12,7 +12,7 @@
 
 1. **Создайте виртуальное окружение (в папке проекта):**
    ```bash
-   python -m venv venv
+   py -m venv venv
    ```
 
    После этого появится папка `venv`, где будут храниться зависимости проекта.
@@ -34,8 +34,10 @@
 
 3. **Установите зависимости из `requirements.txt`:**
    ```bash
-   python.exe -m pip install --upgrade pip
    pip install -r requirements.txt
+   ```
+   ```bash
+   python -m pip install --upgrade pip
    ```
 
 
@@ -110,5 +112,4 @@ python manage.py runserver
 
 Теперь проект доступен по адресу [http://localhost:8000](http://localhost:8000). 
 Если видите ракету с надписью "The install worked successfully! Congratulations!", то запуск прошёл успешно, Django работает!
-Осталось всего ничего: реализовать весь проект!
 
