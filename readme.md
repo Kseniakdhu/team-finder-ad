@@ -23,18 +23,17 @@
    После этого появится папка `venv`, где будут храниться зависимости проекта.
 
 2. **Активируйте окружение:**
-
-    - **Windows (PowerShell):**
-      ```bash
-     venv\Scripts\Activate.ps1 
-      ```
-    - **Windows (cmd):**
+   - **Windows (cmd):**
       ```cmd
       venv\Scripts\activate
       ```
-    - **Linux/Mac:**
+   - **Linux/Mac:**
       ```bash
       source venv/bin/activate
+      ```
+    - **Windows (PowerShell):**
+      ```bash
+     venv\Scripts\Activate.ps1 
       ```
 
 3. **Установите зависимости из `requirements.txt`:**
