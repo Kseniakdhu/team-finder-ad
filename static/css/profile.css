@@ -56,11 +56,20 @@
     color: #666;
 }
 
+
 .profile-actions {
-    min-width: 415px;
     display: flex;
     gap: 10px;
     justify-content: flex-end;
+    flex-wrap: wrap;
+    max-width: 100%;
+}
+
+.profile-share-inline {
+    margin-top: 8px;
+    margin-bottom: 0;
+    padding: 8px 10px;
+    min-width: 0;
 }
 
 .projects-grid-single {

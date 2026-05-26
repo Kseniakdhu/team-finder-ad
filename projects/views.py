@@ -8,10 +8,12 @@ from .forms import ProjectForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 
+
 class ProjectCreateView(LoginRequiredMixin, View):
     def get(self, request):
         form = ProjectForm()
-        return render(request, 'projects/create-project.html', {'form': form, 'is_edit': False})
+        return render(request, 'projects/create-project.html',
+                      {'form': form, 'is_edit': False})
 
     def post(self, request):
         form = ProjectForm(request.POST)
@@ -20,8 +22,15 @@ class ProjectCreateView(LoginRequiredMixin, View):
             project.owner = request.user
             project.save()
             project.participants.add(request.user)
-            return redirect(reverse('project-detail', args=[project.id]))
-        return render(request, 'projects/create-project.html', {'form': form, 'is_edit': False})
+            return redirect(
+                reverse(
+                    'projects:project-detail',
+                    args=[
+                        project.id]))
+
+        return render(request, 'projects/create-project.html',
+                      {'form': form, 'is_edit': False})
+
 
 class ProjectEditView(LoginRequiredMixin, View):
     def get(self, request, pk):
@@ -29,7 +38,8 @@ class ProjectEditView(LoginRequiredMixin, View):
         if project.owner != request.user:
             return HttpResponseForbidden()
         form = ProjectForm(instance=project)
-        return render(request, 'projects/create-project.html', {'form': form, 'is_edit': True})
+        return render(request, 'projects/create-project.html',
+                      {'form': form, 'is_edit': True})
 
     def post(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
@@ -38,8 +48,14 @@ class ProjectEditView(LoginRequiredMixin, View):
         form = ProjectForm(request.POST, instance=project)
         if form.is_valid():
             form.save()
-            return redirect(reverse('project-detail', args=[project.id]))
-        return render(request, 'projects/create-project.html', {'form': form, 'is_edit': True})
+            return redirect(
+                reverse(
+                    'projects:project-detail',
+                    args=[
+                        project.id]))
+        return render(request, 'projects/create-project.html',
+                      {'form': form, 'is_edit': True})
+
 
 class ProjectListView(ListView):
     model = Project
@@ -77,11 +93,11 @@ class ToggleParticipateView(View):
             return HttpResponseForbidden()
         if user in project.participants.all():
             project.participants.remove(user)
-            participated = False
+            participant = False
         else:
             project.participants.add(user)
-            participated = True
-        return JsonResponse({"status": "ok", "participated": participated})
+            participant = True
+        return JsonResponse({"status": "ok", "participant": participant})
 
 
 @method_decorator(login_required, name='dispatch')

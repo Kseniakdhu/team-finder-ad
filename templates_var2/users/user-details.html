@@ -38,13 +38,14 @@
                     {% endif %}
                 </div>
             </div>
-        </div>
-        <div class="profile-actions">
             <a href="#"
-               class="black-button black-button-share share-button"
-               data-url="/users/{{ user.id }}/">
+               class="black-button black-button-share share-button profile-share-inline"
+               data-url="/users/{{ user.id }}/"
+               style="margin-left: 16px; align-self: flex-start;">
                 {% include 'includes/svg/share.html' %}
             </a>
+        </div>
+        <div class="profile-actions">
             {% if request.user.id == user.id %}
             <a href="{% url 'users:edit-profile' %}" class="black-button">
                 {% include 'includes/svg/pen.html' %}

@@ -112,31 +112,63 @@
     display: block;
 }
 
+
 .avatar-preview .overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.55);
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-end;
     align-items: center;
+    gap: 6px;
     opacity: 0;
     transition: opacity 0.3s;
+    padding-bottom: 16px;
+}
+
+.delete-avatar-btn {
+    background: #fff;
+    border: 1px solid #d93025;
+    color: #d93025;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.delete-avatar-btn:hover {
+    background: #d93025;
+    color: #fff;
 }
 
 .avatar-preview:hover .overlay {
     opacity: 1;
 }
 
-.avatar-preview .overlay button {
+
+.avatar-preview .overlay button,
+.delete-avatar-btn {
     background: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 14px;
-    font-weight: 600;
+    border: 1px solid #bbb;
+    color: #333;
+    border-radius: 5px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 500;
     cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    transition: background 0.2s, color 0.2s, border 0.2s;
+    margin: 0 2px;
+}
+.avatar-preview .overlay button:hover,
+.delete-avatar-btn:hover {
+    background: #222;
+    color: #fff;
+    border: 1px solid #222;
 }
 
 #id_avatar {
-    display: none;
+    display: none !important;
 }

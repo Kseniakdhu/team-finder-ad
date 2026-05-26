@@ -1,12 +1,18 @@
-from django.contrib.auth import authenticate, logout, login, update_session_auth_hash
+from django.contrib.auth import (
+    authenticate, logout, login, update_session_auth_hash
+)
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
-from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
+from django.http import (
+    JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
+)
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from .models import User
 from projects.models import Skill
-from .forms import RegistrationForm, EditProfileForm, LoginForm, ChangePasswordForm
+from .forms import (
+    RegistrationForm, EditProfileForm, LoginForm, ChangePasswordForm
+)
 
 
 class UserDetailView(View):
@@ -18,6 +24,7 @@ class UserDetailView(View):
 def logout_view(request):
     logout(request)
     return redirect('/projects/list/')
+
 
 @method_decorator(login_required, name='dispatch')
 class ChangePasswordView(View):
@@ -32,7 +39,7 @@ class ChangePasswordView(View):
             request.user.set_password(new_password)
             request.user.save()
             update_session_auth_hash(request, request.user)
-            return redirect('user-details', user_id=request.user.id)
+            return redirect('users:user-details', user_id=request.user.id)
         return render(request, 'users/change_password.html', {'form': form})
 
 
@@ -49,10 +56,11 @@ class LoginView(View):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('project-list')
+                return redirect('projects:project-list')
             else:
                 form.add_error(None, 'Неверный email или пароль')
         return render(request, 'users/login.html', {'form': form})
+
 
 class RegisterView(View):
     def get(self, request):
@@ -60,12 +68,11 @@ class RegisterView(View):
         return render(request, 'users/register.html', {'form': form})
 
     def post(self, request):
-        form = RegistrationForm(request.POST)
+        form = RegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
             user.set_password(form.cleaned_data['password'])
             user.save()
-            # После регистрации не логиним пользователя, а перенаправляем на страницу входа
             return redirect('users:login')
         return render(request, 'users/register.html', {'form': form})
 
@@ -77,11 +84,22 @@ class EditProfileView(View):
         return render(request, 'users/edit_profile.html', {'form': form})
 
     def post(self, request):
-        form = EditProfileForm(request.POST, request.FILES, instance=request.user)
+        if request.POST.get('delete_avatar'):
+            user = request.user
+            user.avatar.delete(save=False)
+            user.avatar = None
+            user.save()
+            return redirect('users:edit-profile')
+        form = EditProfileForm(
+            request.POST,
+            request.FILES,
+            instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect('user-details', user_id=request.user.id)
+            return redirect('users:user-details', user_id=request.user.id)
         return render(request, 'users/edit_profile.html', {'form': form})
+
+
 @login_required
 def skills_autocomplete(request):
     q = request.GET.get('q', '')
@@ -93,17 +111,26 @@ def skills_autocomplete(request):
 @method_decorator(login_required, name='dispatch')
 class AddSkillView(View):
     def post(self, request, user_id):
+        import json
         if request.user.id != int(user_id):
             return HttpResponseForbidden()
-        skill_id = request.POST.get('skill_id')
-        name = request.POST.get('name')
+        # Поддержка JSON-запроса от JS
+        if request.content_type == "application/json":
+            data = json.loads(request.body)
+            skill_id = data.get('skill_id')
+            name = data.get('name')
+        else:
+            skill_id = request.POST.get('skill_id')
+            name = request.POST.get('name')
         created = False
         added = False
+        skill = None
         if skill_id:
             skill = Skill.objects.filter(id=skill_id).first()
-            if skill and not request.user.skills.filter(id=skill.id).exists():
-                request.user.skills.add(skill)
-                added = True
+            if skill:
+                if not request.user.skills.filter(id=skill.id).exists():
+                    request.user.skills.add(skill)
+                    added = True
         elif name:
             skill, created = Skill.objects.get_or_create(name=name)
             if not request.user.skills.filter(id=skill.id).exists():
@@ -111,7 +138,13 @@ class AddSkillView(View):
                 added = True
         else:
             return HttpResponseBadRequest()
-        return JsonResponse({"skill_id": skill.id if skill else None, "created": created, "added": added})
+        # Возвращаем id и name для JS
+        return JsonResponse({
+            "id": skill.id if skill else None,
+            "name": skill.name if skill else None,
+            "created": created,
+            "added": added,
+        })
 
 
 @method_decorator(login_required, name='dispatch')
@@ -125,16 +158,18 @@ class RemoveSkillView(View):
         request.user.skills.remove(skill)
         return JsonResponse({"removed": True})
 
+
 class ParticipantsListView(View):
     def get(self, request):
         from django.core.paginator import Paginator
         skill_name = request.GET.get('skill')
-        all_skills = Skill.objects.all()
+        all_skills = Skill.objects.filter(users__isnull=False).distinct()
         active_skill = None
         if skill_name:
             active_skill = Skill.objects.filter(name=skill_name).first()
             if active_skill:
-                users_qs = User.objects.filter(skills=active_skill).order_by('-date_joined')
+                users_qs = User.objects.filter(
+                    skills=active_skill).order_by('-date_joined')
             else:
                 users_qs = User.objects.none()
         else:

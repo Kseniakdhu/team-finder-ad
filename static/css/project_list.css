@@ -26,19 +26,20 @@
 .projects-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 24px;
+    gap: 32px;
     margin-top: 30px;
+    align-items: start;
 }
 
 .project-card {
     display: flex;
-    height: 180px;
+    min-height: 230px;
     background: white;
     border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 20px;
-    width: 90%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    border-radius: 16px;
+    padding: 28px;
+    width: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     flex-direction: column;
     justify-content: space-between;
 }
@@ -49,7 +50,6 @@
 
 .project-card p {
     margin-top: 22px;
-    height: 100%;
 }
 
 .project-card-header {
@@ -87,15 +87,18 @@
 }
 
 .project-card-title {
-    font-size: 14px;
-    margin: 10px 0;
+    font-size: 20px;
+    margin: 14px 0 10px 0;
+    word-break: break-word;
 }
 
 .project-card-description {
     color: #444;
-    font-size: 13px;
-    margin: 0;
-    max-height: 59px;
+    font-size: 15px;
+    margin: 0 0 8px 0;
+    max-height: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .project-card-footer {
@@ -156,7 +159,7 @@
     border: 1px solid #ddd;
     border-radius: 12px;
     padding: 20px;
-    width: calc(100% - 36spx);
+    width: calc(100% - 36px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
     flex-direction: column;
     justify-content: space-between;
@@ -188,6 +191,18 @@
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-between;
+}
+
+.collapsed-project-card .project-status-black {
+    min-width: 90px;
+    text-align: center;
+    display: inline-block;
+    padding: 10px 0;
+    border-radius: 8px;
+    font-size: 14px;
+    background: black;
+    color: white;
+    box-sizing: border-box;
 }
 
 .skills-filter {

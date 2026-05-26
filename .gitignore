@@ -120,7 +120,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
+.flake8
 
 # mkdocs documentation
 /site
@@ -146,3 +146,4 @@ dmypy.json
 .ruff_cache/
 
 *.Identifier
+

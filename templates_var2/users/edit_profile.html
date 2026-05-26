@@ -6,6 +6,7 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/auth.css' %}">
 <link rel="stylesheet" href="{% static 'css/profile_edit.css' %}">
+<link rel="stylesheet" href="{% static 'css/skills.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -13,6 +14,7 @@
     <h2 class="form-title">Редактирование профиля</h2>
     <form method="post" enctype="multipart/form-data" class="profile-edit-form">
         {% csrf_token %}
+        <input type="hidden" name="delete_avatar" id="delete_avatar_input" value="">
 
         <div class="avatar-upload">
             <div class="avatar-preview">
@@ -21,36 +23,40 @@
                 {% else %}
                     <img src="{% static 'images/default-avatar.png' %}" alt="Аватар по умолчанию">
                 {% endif %}
-                <div class="overlay">
-                    <button type="button" onclick="document.getElementById('id_avatar').click()">Заменить</button>
+                <div class="overlay avatar-buttons-row">
+                    <button type="button" onclick="document.getElementById('id_avatar').click()">Загрузить/сменить</button>
+                    {% if user.avatar %}
+                        <button type="button" class="delete-avatar-btn" style="margin-left:8px;" onclick="document.getElementById('delete_avatar_input').value='1'; document.querySelector('.profile-edit-form').submit();">Удалить</button>
+                    {% endif %}
                 </div>
             </div>
-            {{ form.avatar }}
+            <label for="id_avatar" style="display:none;">{{ form.avatar.label }}</label>
+            <input id="id_avatar" name="avatar" type="file" style="display:none;" accept="image/*">
         </div>
 
         <div class="form-row">
             <div class="form-field">
-                {{ form.name.label_tag }}
+                <label for="id_name">Имя</label>
                 {{ form.name }}
             </div>
             <div class="form-field">
-                {{ form.surname.label_tag }}
+                <label for="id_surname">Фамилия</label>
                 {{ form.surname }}
             </div>
         </div>
 
         <div class="form-field">
-            {{ form.about.label_tag }}
+            <label for="id_about">О себе</label>
             {{ form.about }}
         </div>
 
         <div class="form-row">
             <div class="form-field">
-                {{ form.phone.label_tag }}
+                <label for="id_phone">Телефон</label>
                 {{ form.phone }}
             </div>
             <div class="form-field">
-                {{ form.github_url.label_tag }}
+                <label for="id_github_url">GitHub</label>
                 {{ form.github_url }}
             </div>
         </div>
@@ -67,8 +73,23 @@
 
         <div class="form-actions">
             <a href="{% url 'users:user-details' user.id %}" class="cancel-button">Отмена</a>
-            <button type="submit" class="save-button">Сохранить</button>
+            <button type="submit" class="save-button">Сохранить изменения</button>
         </div>
     </form>
+
+    <div id="skills-container" data-user-id="{{ user.id }}">
+        {% for skill in user.skills.all %}
+            <span class="skill-chip" data-id="{{ skill.id }}">{{ skill.name }} <button type="button" class="remove-skill-btn" aria-label="Удалить" title="Удалить">×</button></span>
+        {% empty %}
+            <span class="skill-empty">Навыки не указаны</span>
+        {% endfor %}
+        <button type="button" id="add-skill-btn" class="add-skill-btn">+ Добавить навык</button>
+        <span id="skill-input-wrapper" class="skill-input-wrapper hidden">
+            <input type="text" id="skill-input" placeholder="Введите название навыка..." autocomplete="off">
+            <ul id="skill-suggestions" class="skill-suggestions hidden"></ul>
+        </span>
+    </div>
+    <script src="{% static 'js/skills.js' %}"></script>
+    <script src="{% static 'js/avatar_preview.js' %}"></script>
 </div>
 {% endblock %}

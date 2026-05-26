@@ -1,10 +1,18 @@
+from django.forms.widgets import ClearableFileInput
 from django import forms
 from .models import User
 
+
 class ChangePasswordForm(forms.Form):
-    old_password = forms.CharField(widget=forms.PasswordInput, label='Старый пароль')
-    new_password1 = forms.CharField(widget=forms.PasswordInput, label='Новый пароль')
-    new_password2 = forms.CharField(widget=forms.PasswordInput, label='Повторите новый пароль')
+    old_password = forms.CharField(
+        widget=forms.PasswordInput,
+        label='Старый пароль')
+    new_password1 = forms.CharField(
+        widget=forms.PasswordInput,
+        label='Новый пароль')
+    new_password2 = forms.CharField(
+        widget=forms.PasswordInput,
+        label='Повторите новый пароль')
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -36,15 +44,27 @@ class RegistrationForm(forms.ModelForm):
         model = User
         fields = ['name', 'surname', 'email', 'phone', 'avatar', 'password']
 
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if not self.cleaned_data.get('avatar'):
+            from .avatar_utils import generate_avatar
+            first_letter = self.cleaned_data.get('name', 'U')[0].upper()
+            user.avatar = generate_avatar(first_letter)
+        if commit:
+            user.save()
+        return user
 
     def clean_phone(self):
         phone = self.cleaned_data['phone']
         normalized = self._normalize_phone(phone)
         if not normalized:
-            raise forms.ValidationError('Телефон должен быть в формате 8XXXXXXXXXX или +7XXXXXXXXXX')
-        # Проверка уникальности с учётом формата
-        if User.objects.exclude(pk=self.instance.pk).filter(phone=normalized).exists():
-            raise forms.ValidationError('Пользователь с таким номером телефона уже существует.')
+            raise forms.ValidationError(
+                'Телефон должен быть в формате 8XXXXXXXXXX или +7XXXXXXXXXX')
+        if User.objects.exclude(
+                pk=self.instance.pk).filter(
+                phone=normalized).exists():
+            raise forms.ValidationError(
+                'Пользователь с таким номером телефона уже существует.')
         return normalized
 
     def clean_github_url(self):
@@ -57,8 +77,10 @@ class RegistrationForm(forms.ModelForm):
                 validator(url)
             except ValidationError:
                 raise forms.ValidationError('Введите корректную ссылку.')
-            if not (url.startswith('https://github.com/') or url.startswith('http://github.com/')):
-                raise forms.ValidationError('Ссылка должна вести на github.com')
+            if not (url.startswith('https://github.com/')
+                    or url.startswith('http://github.com/')):
+                raise forms.ValidationError(
+                    'Ссылка должна вести на github.com')
         return url
 
     def _normalize_phone(self, phone):
@@ -71,21 +93,35 @@ class RegistrationForm(forms.ModelForm):
         return None
 
 
+class CustomClearableFileInput(ClearableFileInput):
+    clear_checkbox_label = 'Удалить'
+    initial_text = 'Текущий файл'
+    input_text = 'Изменить'
+    template_name = 'django/forms/widgets/clearable_file_input.html'
+
 
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['name', 'surname', 'avatar', 'about', 'phone', 'github_url']
-
+        widgets = {
+            'avatar': CustomClearableFileInput,
+        }
+        labels = {
+            'avatar': 'Аватар',
+        }
 
     def clean_phone(self):
         phone = self.cleaned_data['phone']
         normalized = self._normalize_phone(phone)
         if not normalized:
-            raise forms.ValidationError('Телефон должен быть в формате 8XXXXXXXXXX или +7XXXXXXXXXX')
-        # Проверка уникальности с учётом формата
-        if User.objects.exclude(pk=self.instance.pk).filter(phone=normalized).exists():
-            raise forms.ValidationError('Пользователь с таким номером телефона уже существует.')
+            raise forms.ValidationError(
+                'Телефон должен быть в формате 8XXXXXXXXXX или +7XXXXXXXXXX')
+        if User.objects.exclude(
+                pk=self.instance.pk).filter(
+                phone=normalized).exists():
+            raise forms.ValidationError(
+                'Пользователь с таким номером телефона уже существует.')
         return normalized
 
     def clean_github_url(self):
@@ -98,8 +134,10 @@ class EditProfileForm(forms.ModelForm):
                 validator(url)
             except ValidationError:
                 raise forms.ValidationError('Введите корректную ссылку.')
-            if not (url.startswith('https://github.com/') or url.startswith('http://github.com/')):
-                raise forms.ValidationError('Ссылка должна вести на github.com')
+            if not (url.startswith('https://github.com/')
+                    or url.startswith('http://github.com/')):
+                raise forms.ValidationError(
+                    'Ссылка должна вести на github.com')
         return url
 
     def _normalize_phone(self, phone):
