@@ -24,7 +24,7 @@
      venv\Scripts\Activate.ps1 
       ```
     - **Windows (cmd):**
-      ```bash
+      ```cmd
       venv\Scripts\activate
       ```
     - **Linux/Mac:**
@@ -34,10 +34,8 @@
 
 3. **Установите зависимости из `requirements.txt`:**
    ```bash
-   pip install -r requirements.txt
-   ```
-   ```bash
    python -m pip install --upgrade pip
+   pip install -r requirements.txt
    ```
 
 
