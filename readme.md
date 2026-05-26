@@ -5,6 +5,11 @@
 
 # Первоначальная настройка проекта TeamFinder
 
+## Требования
+
+- Python 3.11.x (локально для запуска Django)
+- Docker и Docker Compose (для запуска базы данных)
+
 ## 1. Виртуальное окружение
 
 Перед началом работы необходимо создать и активировать виртуальное окружение Python.  
@@ -24,7 +29,7 @@
      venv\Scripts\Activate.ps1 
       ```
     - **Windows (cmd):**
-      ```bash
+      ```cmd
       venv\Scripts\activate
       ```
     - **Linux/Mac:**
