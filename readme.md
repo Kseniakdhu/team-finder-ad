@@ -33,7 +33,7 @@
       ```
     - **Windows (PowerShell):**
       ```bash
-     venv\Scripts\Activate.ps1 
+      venv\Scripts\Activate.ps1 
       ```
 
 3. **Установите зависимости из `requirements.txt`:**
