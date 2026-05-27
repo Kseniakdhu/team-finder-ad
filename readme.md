@@ -31,7 +31,7 @@ TeamFinder позволяет:
 Склонируйте проект с GitHub:
 
 ```bash
-git clone <ссылка на репозиторий>
+git clone <https://github.com/Kseniakdhu/team-finder-ad.git>
 cd team-finder-ad
 ```
 
