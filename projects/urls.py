@@ -1,13 +1,14 @@
-from .views import (
-    ProjectListView,
-    ProjectDetailView,
-    CompleteProjectView,
-    ToggleParticipateView,
-    ProjectCreateView,
-    ProjectEditView,
-    ToggleFavoriteView,
-)
 from django.urls import path
+
+from projects.views import (
+    CompleteProjectView,
+    ProjectCreateView,
+    ProjectDetailView,
+    ProjectEditView,
+    ProjectListView,
+    ToggleParticipateView,
+)
+
 app_name = 'projects'
 
 urlpatterns = [
@@ -27,10 +28,6 @@ urlpatterns = [
         '<int:pk>/toggle-participate/',
         ToggleParticipateView.as_view(),
         name='project-toggle-participate'),
-    path(
-        '<int:pk>/toggle-favorite/',
-        ToggleFavoriteView.as_view(),
-        name='project-toggle-favorite'),
     path(
         'create-project/',
         ProjectCreateView.as_view(),

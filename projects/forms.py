@@ -1,8 +1,10 @@
 from django import forms
-from .models import Project
+
+from projects.models import Project
+from common.mixins import GithubUrlCleaner
 
 
-class ProjectForm(forms.ModelForm):
+class ProjectForm(GithubUrlCleaner, forms.ModelForm):
     name = forms.CharField(label='Название проекта')
     description = forms.CharField(
         label='Описание проекта',
@@ -16,19 +18,3 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ['name', 'description', 'github_url', 'status']
-
-    def clean_github_url(self):
-        url = self.cleaned_data.get('github_url')
-        if url:
-            from django.core.validators import URLValidator
-            from django.core.exceptions import ValidationError
-            validator = URLValidator()
-            try:
-                validator(url)
-            except ValidationError:
-                raise forms.ValidationError('Введите корректную ссылку.')
-            if not (url.startswith('https://github.com/')
-                    or url.startswith('http://github.com/')):
-                raise forms.ValidationError(
-                    'Ссылка должна вести на github.com')
-        return url

@@ -1,5 +1,12 @@
 from django.contrib import admin
-from .models import Project, Skill
 
-admin.site.register(Project)
-admin.site.register(Skill)
+from projects.models import Skill
+
+
+class SkillAdmin(admin.ModelAdmin):
+	list_display = ("id", "name")
+	search_fields = ("name",)
+	list_filter = ("name",)
+
+
+admin.site.register(Skill, SkillAdmin)

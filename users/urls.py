@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import (
+
+from users.views import (
     ParticipantsListView,
     skills_autocomplete,
     AddSkillView,

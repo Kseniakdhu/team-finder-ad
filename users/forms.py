@@ -1,6 +1,9 @@
-from django.forms.widgets import ClearableFileInput
 from django import forms
-from .models import User
+from django.forms.widgets import ClearableFileInput
+
+from users.models import User
+from common.mixins import GithubUrlCleaner, PhoneCleaner
+from users.avatar_utils import generate_avatar
 
 
 class ChangePasswordForm(forms.Form):
@@ -33,7 +36,7 @@ class ChangePasswordForm(forms.Form):
         return cleaned_data
 
 
-class RegistrationForm(forms.ModelForm):
+class RegistrationForm(PhoneCleaner, GithubUrlCleaner, forms.ModelForm):
     name = forms.CharField(label='Имя')
     surname = forms.CharField(label='Фамилия')
     email = forms.EmailField(label='Email')
@@ -47,50 +50,11 @@ class RegistrationForm(forms.ModelForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         if not self.cleaned_data.get('avatar'):
-            from .avatar_utils import generate_avatar
             first_letter = self.cleaned_data.get('name', 'U')[0].upper()
             user.avatar = generate_avatar(first_letter)
         if commit:
             user.save()
         return user
-
-    def clean_phone(self):
-        phone = self.cleaned_data['phone']
-        normalized = self._normalize_phone(phone)
-        if not normalized:
-            raise forms.ValidationError(
-                'Телефон должен быть в формате 8XXXXXXXXXX или +7XXXXXXXXXX')
-        if User.objects.exclude(
-                pk=self.instance.pk).filter(
-                phone=normalized).exists():
-            raise forms.ValidationError(
-                'Пользователь с таким номером телефона уже существует.')
-        return normalized
-
-    def clean_github_url(self):
-        url = self.cleaned_data.get('github_url')
-        if url:
-            from django.core.validators import URLValidator
-            from django.core.exceptions import ValidationError
-            validator = URLValidator()
-            try:
-                validator(url)
-            except ValidationError:
-                raise forms.ValidationError('Введите корректную ссылку.')
-            if not (url.startswith('https://github.com/')
-                    or url.startswith('http://github.com/')):
-                raise forms.ValidationError(
-                    'Ссылка должна вести на github.com')
-        return url
-
-    def _normalize_phone(self, phone):
-        import re
-        phone = phone.replace(' ', '').replace('-', '')
-        if re.fullmatch(r'8\d{10}', phone):
-            return '+7' + phone[1:]
-        if re.fullmatch(r'\+7\d{10}', phone):
-            return phone
-        return None
 
 
 class CustomClearableFileInput(ClearableFileInput):
@@ -100,7 +64,7 @@ class CustomClearableFileInput(ClearableFileInput):
     template_name = 'django/forms/widgets/clearable_file_input.html'
 
 
-class EditProfileForm(forms.ModelForm):
+class EditProfileForm(PhoneCleaner, GithubUrlCleaner, forms.ModelForm):
     class Meta:
         model = User
         fields = ['name', 'surname', 'avatar', 'about', 'phone', 'github_url']
@@ -110,44 +74,6 @@ class EditProfileForm(forms.ModelForm):
         labels = {
             'avatar': 'Аватар',
         }
-
-    def clean_phone(self):
-        phone = self.cleaned_data['phone']
-        normalized = self._normalize_phone(phone)
-        if not normalized:
-            raise forms.ValidationError(
-                'Телефон должен быть в формате 8XXXXXXXXXX или +7XXXXXXXXXX')
-        if User.objects.exclude(
-                pk=self.instance.pk).filter(
-                phone=normalized).exists():
-            raise forms.ValidationError(
-                'Пользователь с таким номером телефона уже существует.')
-        return normalized
-
-    def clean_github_url(self):
-        url = self.cleaned_data.get('github_url')
-        if url:
-            from django.core.validators import URLValidator
-            from django.core.exceptions import ValidationError
-            validator = URLValidator()
-            try:
-                validator(url)
-            except ValidationError:
-                raise forms.ValidationError('Введите корректную ссылку.')
-            if not (url.startswith('https://github.com/')
-                    or url.startswith('http://github.com/')):
-                raise forms.ValidationError(
-                    'Ссылка должна вести на github.com')
-        return url
-
-    def _normalize_phone(self, phone):
-        import re
-        phone = phone.replace(' ', '').replace('-', '')
-        if re.fullmatch(r'8\d{10}', phone):
-            return '+7' + phone[1:]
-        if re.fullmatch(r'\+7\d{10}', phone):
-            return phone
-        return None
 
 
 class LoginForm(forms.Form):
