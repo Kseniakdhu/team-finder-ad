@@ -27,7 +27,7 @@ class UserDetailView(DetailView):
 
 def logout_view(request):
     logout(request)
-    return redirect('/projects/list/')
+    return redirect('projects:project-list')
 
 
 class ChangePasswordView(PasswordChangeView):
@@ -50,9 +50,8 @@ class LoginView(FormView):
         if user is not None:
             login(self.request, user)
             return super().form_valid(form)
-        else:
-            form.add_error(None, 'Неверный email или пароль')
-            return self.form_invalid(form)
+        form.add_error(None, 'Неверный email или пароль')
+        return self.form_invalid(form)
 
 
 class RegisterView(CreateView):

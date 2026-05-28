@@ -39,7 +39,7 @@ def generate_avatar(letter, size=AVATAR_DEFAULT_SIZE):
         except Exception:
             continue
     if font is None:
-        font = ImageFont.load_default()
+        raise Exception("Не удалось найти подходящий truetype-шрифт для генерации аватара.")
     bbox = draw.textbbox((0, 0), letter, font=font)
     w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
     text_pos = ((size - w) / 2, (size - h) / 2 + AVATAR_TEXT_OFFSET_Y)

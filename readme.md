@@ -90,7 +90,7 @@ cp .env_example .env
 | **POSTGRES_PASSWORD** | Пароль пользователя PostgreSQL.                                                                                                                            |
 | **POSTGRES_HOST**     | Адрес сервера БД. В случае локальной разработки localhost.                                                                                                 |
 | **POSTGRES_PORT**     | Порт подключения к БД (по умолчанию `5432`).                                                                                                               |
-| **TASK_VERSION**      | 2                                                                          |
+| **ALLOWED_HOSTS**     | Список разрешённых хостов для Django (например: `localhost,127.0.0.1`).                                             |
 
 ---
 
